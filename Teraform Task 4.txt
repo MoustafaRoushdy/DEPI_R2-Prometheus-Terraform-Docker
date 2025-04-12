@@ -1,0 +1,8 @@
+1. Fork my repo 
+2. create a PR with 
+	1. Prometheus run as a docker container:https://prometheus.io/docs/prometheus/latest/installation/#using-docker
+	2. Add new rule to open the correct port to be able to access Prometheus UI
+	3. Update the key pair with your own keypair
+	4. add output to your terraform code with the Prometheus server public ip
+	5. Add screen shot from your Prometheus UI access
+ 
