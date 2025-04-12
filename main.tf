@@ -22,24 +22,7 @@ resource "aws_key_pair" "prometheus_key" {
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Allow ssh inbound traffic and all outbound traffic"
-
-  tags = {
-    Name = "allow_ssh"
-  }
-}
-
-resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
-  security_group_id = aws_security_group.allow_ssh.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
-}
-
-
-resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
-  description = "Allow ssh inbound traffic and all outbound traffic"
-
-  ingress {
+ ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -59,11 +42,21 @@ resource "aws_security_group" "allow_ssh" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = {
+    Name = "allow_ssh"
+  }
 }
+
+resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
+  security_group_id = aws_security_group.allow_ssh.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1" # semantically equivalent to all ports
+}
+
 
 resource "aws_instance" "prometheus_server" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.micro"
+  instance_type          = "t2.micro"
   key_name               = aws_key_pair.prometheus_key.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   tags = {
