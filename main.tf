@@ -65,6 +65,11 @@ resource "aws_instance" "prometheus_server" {
     host     = self.public_ip
   }
 
+  provisioner "file" {
+    source      = "prometheus.yml"
+    destination = "/home/ubuntu/prometheus.yml"
+  }
+
   provisioner "remote-exec" {
     script = "install_docker.sh"
   }
