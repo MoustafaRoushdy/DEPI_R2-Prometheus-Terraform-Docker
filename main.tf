@@ -15,7 +15,7 @@ data "aws_ami" "ubuntu" {
 }
 resource "aws_key_pair" "prometheus_key" {
   key_name   = "prometheus-key"
-  public_key = file("~/.ssh/id_rsa.pub")
+  public_key = file("~/.ssh/deployer.pub")
 
 }
 resource "aws_security_group" "allow_ssh" {
@@ -40,10 +40,17 @@ resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
   to_port           = 22
 }
 
+resource "aws_vpc_security_group_ingress_rule" "Open_port_9090" {
+  security_group_id = aws_security_group.allow_ssh.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 9090
+  ip_protocol       = "tcp"
+  to_port           = 9090
+}
 
 resource "aws_instance" "prometheus_server" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
   key_name      = aws_key_pair.prometheus_key.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   tags = {
@@ -53,12 +60,15 @@ resource "aws_instance" "prometheus_server" {
   connection {
     type     = "ssh"
     user     = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
+    private_key = file("~/.ssh/deployer")
     host     = self.public_ip
   }
 
   provisioner "remote-exec" {
     script = "install_docker.sh"
+  }
+  provisioner "remote-exec" {
+    script = "prometheus_install.sh"
   }
 }
 
