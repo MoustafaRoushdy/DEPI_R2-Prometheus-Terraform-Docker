@@ -5,4 +5,7 @@
 	3. Update the key pair with your own keypair
 	4. add output to your terraform code with the Prometheus server public ip
 	5. Add screen shot from your Prometheus UI access
+	6. Created prometheus.yml file in my local machine
+	7. used file provisioner to copy it to remote machine
+	8. mounted the file to the running Prometheus container using the -v option from the Prometheus server to Prometheus container
  
