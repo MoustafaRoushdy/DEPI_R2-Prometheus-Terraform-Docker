@@ -1,8 +1,9 @@
 
 
-module "jenkins_server" {
+module "prometheus_server" {
   source = "./modules/server_module"
-  server_name = "jenkins"
-  script_path = "install_java.sh"
-  web_port = 8080
-}
+  server_name = "prometheus"
+  script_path = "install_docker.sh"
+  web_port = 9090
+  requierd_file = "prometheus.yml"
+ }

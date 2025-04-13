@@ -9,3 +9,6 @@ variable "script_path" {
 variable "web_port" {
   
 }
+variable "requierd_file" {
+  
+}
