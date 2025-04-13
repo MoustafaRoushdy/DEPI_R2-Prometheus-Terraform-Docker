@@ -1,0 +1,11 @@
+1. Sync you repo with mine
+2. create a dir called scripts (add install_java.sh, install_docker.sh ) to it
+3. update main.tf file and use server_module module to create the promtheus server
+4. Add output.tf file which contains the promtheus server public IP
+5. Create PR 
+
+
+Bounce
+1. Create null resource 
+2. use local-exec => scp to copy the initial password from the remote machine to your local machine
+3. output => value => reference local file in your machine
