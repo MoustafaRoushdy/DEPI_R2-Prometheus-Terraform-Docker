@@ -47,19 +47,11 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
-resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
-  security_group_id = aws_security_group.allow_ssh.id
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" 
-}
-
-
 resource "aws_instance" "prometheus_server" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.prometheus_key.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
-  subnet_id                   = "subnet-0507f47ac37be3f6b"
   tags = {
     Name = "prometheus_server"
   }
@@ -69,6 +61,11 @@ resource "aws_instance" "prometheus_server" {
     user        = "ubuntu"
     private_key = file("~/.ssh/id_rsa_prometheus")
     host        = self.public_ip
+  }
+
+  provisioner "file" {
+    source      = "./prometheus.yml"
+    destination = "/home/ubuntu/prometheus.yml"
   }
 
   provisioner "remote-exec" {
