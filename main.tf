@@ -18,6 +18,7 @@ resource "aws_key_pair" "prometheus_key" {
   public_key = file("~/.ssh/id_rsa.pub")
 
 }
+
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Allow ssh inbound traffic and all outbound traffic"
@@ -26,18 +27,27 @@ resource "aws_security_group" "allow_ssh" {
     Name = "allow_ssh"
   }
 }
+
 resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   security_group_id = aws_security_group.allow_ssh.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   security_group_id = aws_security_group.allow_ssh.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 22
   ip_protocol       = "tcp"
   to_port           = 22
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_prometheus_ui" {
+  security_group_id = aws_security_group.allow_ssh.id
+  cidr_ipv4         = "0.0.0.0/0"     
+  from_port         = 9090
+  ip_protocol       = "tcp"
+  to_port           = 9090
 }
 
 
@@ -57,8 +67,19 @@ resource "aws_instance" "prometheus_server" {
     host     = self.public_ip
   }
 
+  provisioner "file" {
+  source      = "prometheus.yml"
+  destination = "/home/ubuntu/prometheus.yml"
+  }
+  
   provisioner "remote-exec" {
     script = "install_docker.sh"
   }
+
+}
+
+output "prometheus_server_public_ip" {
+  description = "The public IP of the Prometheus server"
+  value       = aws_instance.prometheus_server.public_ip
 }
 
