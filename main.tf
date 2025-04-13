@@ -34,7 +34,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_tls_ipv4" {
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   security_group_id = aws_security_group.allow_ssh.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 22
@@ -67,9 +67,15 @@ resource "aws_instance" "prometheus_server" {
     host     = self.public_ip
   }
 
+  provisioner "file" {
+  source      = "prometheus.yml"
+  destination = "/home/ubuntu/prometheus.yml"
+  }
+  
   provisioner "remote-exec" {
     script = "install_docker.sh"
   }
+
 }
 
 output "prometheus_server_public_ip" {
