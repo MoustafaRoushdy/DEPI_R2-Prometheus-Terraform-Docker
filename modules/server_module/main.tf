@@ -14,18 +14,13 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-resource "aws_key_pair" "prometheus_key" {
-  key_name   = "prometheus-key"
-  public_key = file("~/.ssh/id_rsa.pub")
-
-}
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
+  name        = "allow_ssh_${var.server_name}"
   description = "Allow ssh inbound traffic and all outbound traffic"
 
   tags = {
-    Name = "allow_ssh"
+    Name = "allow_ssh_${var.server_name}"
   }
 }
 resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
@@ -52,24 +47,48 @@ resource "aws_vpc_security_group_ingress_rule" "allow_web_port" {
 
 resource "aws_instance" "server" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
-  key_name      = aws_key_pair.prometheus_key.key_name
+  instance_type = "t2.micro"
+  key_name      = var.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   tags = {
     Name = "${var.server_name}_server"
   }
 
+}
+
+resource "null_resource" "copy_file" {
+  
+  count = var.use_file_provisioner ? 1 : 0
+
   connection {
     type     = "ssh"
     user     = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
-    host     = self.public_ip
+    private_key = file("~/.ssh/deployer")
+    host     = aws_instance.server.public_ip
+  }
+  provisioner "file" {
+    source      = var.local_file_path
+    destination = var.remote_file_path
+  }
+
+  depends_on = [ aws_instance.server ]
+
+}
+
+resource "null_resource" "exexute_scripts" {
+  
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    private_key = file("~/.ssh/deployer")
+    host     = aws_instance.server.public_ip
   }
 
   provisioner "remote-exec" {
     script = "${path.module}/${var.script_path}"
   }
 
+  depends_on = [ aws_instance.server ]
 
 }
 
