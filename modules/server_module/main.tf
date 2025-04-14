@@ -85,7 +85,7 @@ resource "null_resource" "exexute_scripts" {
   }
 
   provisioner "remote-exec" {
-    script = "${path.module}/${var.script_path}"
+    script = "${var.script_path}"
   }
 
   depends_on = [ aws_instance.server ]
@@ -96,7 +96,7 @@ resource "null_resource" "fetch_jenkins_admin_password" {
   count = var.server_name == "jenkins" ? 1 : 0
 
   provisioner "local-exec" {
-    command = "scp -i ~/.ssh/deployer ubuntu@${aws_instance.server.public_ip}:/home/ubuntu/initialAdminPassword ."
+    command = "scp -o StrictHostKeyChecking=no -i ~/.ssh/deployer ubuntu@${aws_instance.server.public_ip}:/home/ubuntu/initialAdminPassword ."
   }
   depends_on = [null_resource.exexute_scripts]
 }
