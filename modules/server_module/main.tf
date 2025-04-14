@@ -92,3 +92,18 @@ resource "null_resource" "exexute_scripts" {
 
 }
 
+resource "null_resource" "fetch_jenkins_admin_password" {
+  count = var.server_name == "jenkins" ? 1 : 0
+
+  provisioner "local-exec" {
+    command = "scp -i ~/.ssh/deployer ubuntu@${aws_instance.server.public_ip}:/home/ubuntu/initialAdminPassword ."
+  }
+  depends_on = [null_resource.exexute_scripts]
+}
+
+data "local_file" "jenkins_password" {
+  count = var.server_name == "jenkins" ? 1 : 0
+  filename = "./initialAdminPassword"
+  depends_on = [null_resource.fetch_jenkins_admin_password]
+}
+

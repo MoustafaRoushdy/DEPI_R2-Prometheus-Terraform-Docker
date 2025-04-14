@@ -21,3 +21,5 @@ module "prometheus_server" {
   local_file_path      = "./modules/server_module/config_files/prometheus.yml"
   remote_file_path     = "/home/ubuntu/prometheus.yml"
 }
+
+
