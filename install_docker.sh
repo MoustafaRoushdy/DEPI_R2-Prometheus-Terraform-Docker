@@ -13,6 +13,8 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-
-# Run Prometheus container
-sudo docker run -d -p 9090:9090 -v /home/ubuntu/prometheus.yml:/etc/prometheus/prometheus.yml --name prometheus prom/prometheus
+sudo usermod -aG docker ubuntu
+sudo docker run -d\
+    -p 9090:9090 \
+    -v /home/ubuntu/prometheus.yml:/etc/prometheus/prometheus.yml \
+    prom/prometheus
