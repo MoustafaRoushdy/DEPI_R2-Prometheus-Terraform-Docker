@@ -65,9 +65,12 @@ resource "aws_instance" "server" {
     private_key = file("~/.ssh/id_rsa")
     host     = self.public_ip
   }
-
+  provisioner "file" {
+    source      = "${var.requierd_file}"
+    destination = "/home/ubuntu/${var.requierd_file}"
+  }
   provisioner "remote-exec" {
-    script = "${path.module}/${var.script_path}"
+    script = "scripts/${var.script_path}"
   }
 
 
