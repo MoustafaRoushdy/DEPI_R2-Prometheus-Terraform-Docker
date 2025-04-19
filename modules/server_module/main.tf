@@ -16,7 +16,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_key_pair" "server_key" {
   key_name   = "${var.server_name}-key"
-  public_key = file("~/.ssh/id_rsa.pub")
+  public_key = file("/home/ahmed/.ssh/id_rsa.pub")
 
 }
 
@@ -67,7 +67,7 @@ resource "null_resource" "copy_file" {
   connection {
     type     = "ssh"
     user     = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
+    private_key = file("/home/ahmed/.ssh/id_rsa")
     host     = aws_instance.server.public_ip
   }
 
@@ -85,13 +85,14 @@ resource null_resource "remote_provisioner" {
   connection {
     type     = "ssh"
     user     = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
+    private_key = file("/home/ahmed/.ssh/id_rsa")
     host     = aws_instance.server.public_ip
   }
-
+  
   provisioner "remote-exec" {
     script = "scripts/${var.script_path}"
   }
 
   depends_on = [ null_resource.copy_file ]
+  
 }
