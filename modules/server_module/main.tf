@@ -88,7 +88,7 @@ resource "null_resource" "exexute_scripts" {
     script = "${var.script_path}"
   }
 
-  depends_on = [ aws_instance.server ]
+  depends_on = [ null_resource.copy_file ]
 
 }
 
