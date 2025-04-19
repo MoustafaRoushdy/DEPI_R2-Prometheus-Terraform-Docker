@@ -3,7 +3,7 @@
 module "jenkins_server" {
   source = "./modules/server_module"
   server_name = "jenkins"
-  script_path = "install_java.sh"
+  script_path = "install_jenkins.sh"
   web_port = 8080
 }
 
@@ -15,4 +15,14 @@ module "prometheus_server" {
   web_port = 9090
   is_file_copied = true
   file_name = "prometheus.yml"
+}
+
+
+module "jenkins_node" {
+  source = "./modules/server_module"
+  server_name = "jenkins_node"
+  script_path = "install_java.sh"
+  web_port = 8080
+  depends_on = [module.jenkins_server]
+  
 }
