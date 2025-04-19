@@ -7,6 +7,7 @@ variable "script_path" {
 }
 
 variable "web_port" {
+  default = ""
   
 }
 
@@ -28,6 +29,10 @@ variable "local_file_path" {
 variable "remote_file_path" {
   type = string
   default = ""
+}
+
+variable "allow_web_port" {
+  default = false
 }
 
 
