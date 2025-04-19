@@ -59,6 +59,29 @@ resource "aws_instance" "server" {
     Name = "${var.server_name}_server"
   }
 
+}
+
+resource "null_resource" "copy_file" {
+  count = "${var.is_file_copied ? 1 : 0}"
+
+  connection {
+    type     = "ssh"
+    user     = "ubuntu"
+    private_key = file("~/.ssh/id_rsa")
+    host     = aws_instance.server.public_ip
+  }
+
+  provisioner "file" {
+    source      = "${var.file_name}"
+    destination = "/home/ubuntu/${var.file_name}"
+  }
+
+  depends_on = [ aws_instance.server ]
+
+
+}
+
+resource null_resource "remote_provisioner" {
   connection {
     type     = "ssh"
     user     = "ubuntu"
@@ -70,6 +93,5 @@ resource "aws_instance" "server" {
     script = "scripts/${var.script_path}"
   }
 
-
+  depends_on = [ null_resource.copy_file ]
 }
-
