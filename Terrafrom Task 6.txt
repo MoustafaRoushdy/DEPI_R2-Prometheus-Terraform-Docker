@@ -1,0 +1,3 @@
+Provision Two Jenkins nodes
+1. in scripts dir, Create a bash script to only install openjdk
+2. use the server module to create two new nodes and run the created script on them

@@ -13,4 +13,6 @@ module "prometheus_server" {
   server_name = "prometheus"
   script_path = "install_docker_prometheus.sh"
   web_port = 9090
+  is_file_copied = true
+  file_name = "prometheus.yml"
 }

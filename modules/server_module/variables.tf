@@ -12,7 +12,6 @@ variable "web_port" {
 
 variable "file_name" {
   default = ""
-  
 }
 
 variable "is_file_copied" {
