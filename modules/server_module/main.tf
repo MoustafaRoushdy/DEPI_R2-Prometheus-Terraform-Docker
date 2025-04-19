@@ -42,6 +42,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   to_port           = 22
 }
 resource "aws_vpc_security_group_ingress_rule" "allow_web_port" {
+  count = "${var.use_web_port}" ? 1 : 0
   security_group_id = aws_security_group.allow_webport.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = "${var.web_port}"
@@ -90,7 +91,7 @@ resource null_resource "remote_provisioner" {
   }
 
   provisioner "remote-exec" {
-    script = "scripts/${var.script_path}"
+    script = "${var.script_path}"
   }
 
   depends_on = [ null_resource.copy_file ]
