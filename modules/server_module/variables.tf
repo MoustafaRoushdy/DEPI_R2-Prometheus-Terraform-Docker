@@ -23,3 +23,14 @@ variable "enable_web_ingress" {
   default = true
   description = "Flag to enable web ingress rules"
 }
+
+variable "key_name" {
+  description = "Name of the key pair to use for SSH access"
+  default     = ""
+}
+
+variable "file_path" {
+  default = "/home/ubuntu"
+  description = "Path on the server where the file will be copied"
+  
+}

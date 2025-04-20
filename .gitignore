@@ -1,2 +1,4 @@
 .terraform*
 terraform.tfstate*
+files/jenkins_controller_key
+files/jenkins_controller_key.pub

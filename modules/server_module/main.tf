@@ -54,7 +54,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_web_port" {
 resource "aws_instance" "server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
-  key_name      = aws_key_pair.server_key.key_name
+  key_name      = "${var.key_name}" == "" ? aws_key_pair.server_key.key_name : var.key_name
   vpc_security_group_ids = [aws_security_group.allow_webport.id]
   tags = {
     Name = "${var.server_name}_server"
@@ -74,7 +74,7 @@ resource "null_resource" "copy_file" {
 
   provisioner "file" {
     source      = "files/${var.file_name}"
-    destination = "/home/ubuntu/${var.file_name}"
+    destination = "${var.file_path}/${var.file_name}"
   }
 
   depends_on = [ aws_instance.server ]
