@@ -16,20 +16,29 @@ resource "aws_iam_policy" "jenkins_ec2_policy" {
     Version = "2012-10-17",
     Statement = [{
       Effect = "Allow",
-      Action = [
-        "ec2:DescribeInstances",
-        "ec2:RunInstances",
-        "ec2:TerminateInstances",
-        "ec2:StartInstances",
-        "ec2:StopInstances",
-        "ec2:CreateTags",
-        "ec2:DescribeImages",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeVpcs",
-        "ec2:AssociateAddress",
-        "ec2:DescribeKeyPairs"
-      ],
+            "Action": [
+                "ec2:DescribeSpotInstanceRequests",
+                "ec2:CancelSpotInstanceRequests",
+                "ec2:GetConsoleOutput",
+                "ec2:RequestSpotInstances",
+                "ec2:RunInstances",
+                "ec2:StartInstances",
+                "ec2:StopInstances",
+                "ec2:TerminateInstances",
+                "ec2:CreateTags",
+                "ec2:DeleteTags",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceTypes",
+                "ec2:DescribeKeyPairs",
+                "ec2:DescribeRegions",
+                "ec2:DescribeImages",
+                "ec2:DescribeAvailabilityZones",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "iam:ListInstanceProfilesForRole",
+                "iam:PassRole",
+                "ec2:GetPasswordData"
+            ],
       Resource = "*"
     }]
   })
