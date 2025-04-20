@@ -59,7 +59,7 @@ resource "aws_instance" "server" {
   tags = {
     Name = "${var.server_name}_server"
   }
-
+   iam_instance_profile = var.iam_instance_profile
 }
 
 resource "null_resource" "copy_file" {

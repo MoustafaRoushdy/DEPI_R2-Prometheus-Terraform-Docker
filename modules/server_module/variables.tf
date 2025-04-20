@@ -23,3 +23,9 @@ variable "enable_web_ingress" {
   default = true
   description = "Flag to enable web ingress rules"
 }
+
+variable "iam_instance_profile" {
+  type        = string
+  description = "IAM instance profile to attach"
+  default     = null
+}
