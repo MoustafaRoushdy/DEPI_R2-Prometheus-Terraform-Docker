@@ -1,1 +1,10 @@
 1. Create Dynamic Agents for your Jenkins Controller
+
+Steps.
+1. Create an Iam policy with the recommended perm in the ec2-plugin docs
+2. Create a role and attach the policy
+3. create a profile for the role
+4. use the profile in the ec2 instance
+(Now your jenkins server can communicate with AWS API)
+5. Create ssh key pair
+6. Create aws key pair with the public key you just created
