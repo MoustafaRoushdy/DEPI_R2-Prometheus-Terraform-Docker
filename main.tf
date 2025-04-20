@@ -65,3 +65,10 @@ resource "aws_iam_instance_profile" "jenkins_instance_profile" {
   name = "JenkinsInstanceProfile"
   role = aws_iam_role.jenkins_role.name
 }
+
+
+resource "aws_key_pair" "jenkins_nodes" {
+  key_name   = "jenkins_nodes"
+  public_key = file("~/.ssh/jenkins_ec2_key.pub")
+  
+}
