@@ -8,3 +8,8 @@ output "prometheus_server_public_ip" {
   value = module.prometheus_server.server_ip
   
 }
+
+output "jenkins_node_public_ips" {
+  description = "Public IPs of the Jenkins nodes"
+  value = [for i,instance in module.jenkins_node : "node_${i}: ${instance.server_ip}"]
+}

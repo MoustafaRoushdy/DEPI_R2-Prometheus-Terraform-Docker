@@ -42,6 +42,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh_ipv4" {
   to_port           = 22
 }
 resource "aws_vpc_security_group_ingress_rule" "allow_web_port" {
+  count             = var.enable_web_ingress ? 1 : 0
   security_group_id = aws_security_group.allow_webport.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = "${var.web_port}"
