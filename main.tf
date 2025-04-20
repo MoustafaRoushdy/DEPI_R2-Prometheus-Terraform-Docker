@@ -18,11 +18,3 @@ module "prometheus_server" {
 }
 
 
-module "jenkins_node" {
-  count = 2
-  source = "./modules/server_module"
-  server_name = "jenkins_node_${count.index}"
-  script_path = "install_java.sh"
-  enable_web_ingress = false
-  depends_on = [module.jenkins_server]
-}
