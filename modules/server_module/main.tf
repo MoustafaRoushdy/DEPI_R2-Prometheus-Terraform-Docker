@@ -16,9 +16,9 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_key_pair" "server_key" {
   key_name   = "${var.server_name}-key"
-  public_key = file("~/.ssh/id_rsa.pub")
-
+  public_key = file("~/.ssh/deployer.pub")
 }
+
 
 resource "aws_security_group" "allow_webport" {
   name        = "${var.server_name}-allow-${var.web_port}"
@@ -53,9 +53,10 @@ resource "aws_vpc_security_group_ingress_rule" "allow_web_port" {
 
 resource "aws_instance" "server" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
   key_name      = aws_key_pair.server_key.key_name
   vpc_security_group_ids = [aws_security_group.allow_webport.id]
+  iam_instance_profile = var.instance_profile_name
   tags = {
     Name = "${var.server_name}_server"
   }
@@ -68,7 +69,7 @@ resource "null_resource" "copy_file" {
   connection {
     type     = "ssh"
     user     = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
+    private_key = file("~/.ssh/deployer")
     host     = aws_instance.server.public_ip
   }
 
@@ -86,7 +87,7 @@ resource null_resource "remote_provisioner" {
   connection {
     type     = "ssh"
     user     = "ubuntu"
-    private_key = file("~/.ssh/id_rsa")
+    private_key = file("~/.ssh/deployer")
     host     = aws_instance.server.public_ip
   }
 
@@ -95,4 +96,48 @@ resource null_resource "remote_provisioner" {
   }
 
   depends_on = [ null_resource.copy_file ]
+}
+
+resource "null_resource" "fetch_jenkins_admin_password" {
+  count = var.server_name == "jenkins" ? 1 : 0
+
+  provisioner "local-exec" {
+    command = "scp -o StrictHostKeyChecking=no -i ~/.ssh/deployer ubuntu@${aws_instance.server.public_ip}:/home/ubuntu/initialAdminPassword ."
+  }
+  depends_on = [null_resource.remote_provisioner]
+}
+
+data "local_file" "jenkins_password" {
+  count = var.server_name == "jenkins" ? 1 : 0
+  filename = "./initialAdminPassword"
+  depends_on = [null_resource.fetch_jenkins_admin_password]
+}
+
+resource "aws_key_pair" "jenkins_agent_key" {
+  key_name   = "jenkins-agent-key"
+  public_key = file("~/.ssh/test.pub")
+}
+
+
+resource "aws_security_group" "jenkins_agent_sg" {
+  name        = "jenkins-agent-sg"
+  description = "Allow SSH only from Jenkins master SG"
+
+  ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.allow_webport.id]
+    description     = "Allow SSH from Jenkins master SG only"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "jenkins-nodes"
+  }
 }

@@ -23,3 +23,7 @@ variable "enable_web_ingress" {
   default = true
   description = "Flag to enable web ingress rules"
 }
+
+variable "instance_profile_name" {
+ default = ""
+}
